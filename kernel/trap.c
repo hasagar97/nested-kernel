@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "vmm.c"
 
 struct spinlock tickslock;
 uint ticks;
@@ -64,10 +65,21 @@ usertrap(void)
     // so enable only now that we're done with those registers.
     intr_on();
 
+    // 2. call a function which runs ecall s-mode => m-mode
+    if ((strncmp(p->name, "init", 3) != 0) && (strncmp(p->name, "sh", 2) != 0))  {
+      // not one of the main processes
+
+      printf("Pname %s\n", p->name);
+      printf("going into ecall\n");
+      // log_syscall(p->name);
+      // asm volatile("ecall");
+      printf("coming out of ecall\n");
+    }
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {
+    printf("Issue\n");
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     setkilled(p);

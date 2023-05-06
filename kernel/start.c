@@ -6,6 +6,8 @@
 
 void main();
 void timerinit();
+void start_vm();
+void log_syscall(char *);
 
 // entry.S needs one stack per CPU.
 __attribute__ ((aligned (16))) char stack0[4096 * NCPU];
@@ -34,7 +36,7 @@ start()
   w_satp(0);
 
   // delegate all interrupts and exceptions to supervisor mode.
-  w_medeleg(0xffff);
+  w_medeleg(0xFFFFFFFFFFFFFFFF);
   w_mideleg(0xffff);
   w_sie(r_sie() | SIE_SEIE | SIE_STIE | SIE_SSIE);
 
@@ -86,4 +88,24 @@ timerinit()
 
   // enable machine-mode timer interrupts.
   w_mie(r_mie() | MIE_MTIE);
+}
+
+
+void start_vm() {
+    //  initialize logging
+    printf("Security monitor starting..\n");
+    printf("Kernel starting..\n");
+    void (*log_syscall_ptr)() = &log_syscall;
+    printf("Function ptr %d..\n", &log_syscall_ptr);
+    // Set m level traps to address pointed by ptr
+
+    // call start to load kernel
+    start();
+}
+
+// time, syscall number, args, and process name
+void log_syscall(char *pname) {
+    //  initialize logging
+    printf("%d: %s \n", r_time(), pname);
+    // asm volatile("mret");
 }
