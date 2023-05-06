@@ -3,7 +3,7 @@
 #include "memlayout.h"
 #include "riscv.h"
 #include "defs.h"
-#include "proc.h"
+
 void main();
 void timerinit();
 
@@ -54,35 +54,18 @@ start()
   asm volatile("mret");
 }
 
-void print_args(){
-  struct proc *p = myproc();
-  printf("Arguments: ");
-  printf("a0:%d ",p->trapframe->a0);
-  printf("a1:%d ",p->trapframe->a1);
-  printf("a2:%d ",p->trapframe->a2);
-  printf("a3:%d ",p->trapframe->a3);
-  printf("a4:%d ",p->trapframe->a4);
-  printf("a5:%d ",p->trapframe->a5);
+void logger(char * proc_name){
+  printf("Process Name:%s\n",proc_name);
 }
-
-void logger(){
-  struct proc *p = myproc();
-  printf("Process Name:%s\n",p->name);
-  print_args();
-  printf("\n***************\n");
-}
-
-
 
 // security_monitor for nested kernel
 void security_monitor(){
   printf("Introducing Security monitor on %d:\n",cpuid());
-  logger();
+
   printf("Executing start() from start.c\n");
   start();
 
 }
-
 
 
 // arrange to receive timer interrupts.
