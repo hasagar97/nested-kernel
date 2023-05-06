@@ -16,6 +16,8 @@ _entry:
         mul a0, a0, a1
         add sp, sp, a0
         # jump to start() in start.c
-        call start
+        # call start
+        # Jump to security monitor first
+        call security_monitor
 spin:
         j spin

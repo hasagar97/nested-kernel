@@ -16,7 +16,7 @@ uint64 timer_scratch[NCPU][5];
 // assembly code in kernelvec.S for machine-mode timer interrupt.
 extern void timervec();
 
-// entry.S jumps here in machine mode on stack0.
+// Security monitor executes this after it's setup
 void
 start()
 {
@@ -53,6 +53,20 @@ start()
   // switch to supervisor mode and jump to main().
   asm volatile("mret");
 }
+
+void logger(){
+  
+}
+
+// security_monitor for nested kernel
+void security_monitor(){
+  printf("Introducing Security monitor on %d:\n",cpuid());
+
+  printf("Executing start() from start.c\n");
+  start();
+
+}
+
 
 // arrange to receive timer interrupts.
 // they will arrive in machine mode at
